@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Will You Be My Valentine? 💌</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: "Comic Sans MS", "Chalkboard SE", cursive, sans-serif;
+      background: linear-gradient(135deg, #ff9aa2, #ffd3e0, #ff9aa2);
+      color: #333;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+    #confetti-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .container {
+      max-width: 90%;
+      padding: 30px;
+      background: rgba(255,255,255,0.75);
+      border-radius: 25px;
+      box-shadow: 0 10px 40px rgba(255,105,180,0.4);
+      animation: float 6s ease-in-out infinite;
+      z-index: 10;
+      position: relative;
+    }
+    h1 {
+      font-size: 3.2rem;
+      color: #e91e63;
+      margin: 0 0 30px;
+      text-shadow: 3px 3px 0 #fff, 5px 5px 0 #ffb6c1;
+    }
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      margin: 40px 0;
+      position: relative;
+    }
+    button {
+      font-size: 1.8rem;
+      padding: 18px 60px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    #yesBtn {
+      background: #ff4757;
+      color: white;
+      box-shadow: 0 8px 0 #c0392b;
+    }
+    #yesBtn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 0 #c0392b;
+    }
+    #noBtn {
+      background: #dfe4ea;
+      color: #2f3542;
+      box-shadow: 0 8px 0 #a4b0be;
+      position: relative;
+    }
+    .hidden-love {
+      display: none;
+      margin-top: 40px;
+    }
+    .hidden-love.show {
+      display: block;
+      animation: fadeIn 1.5s;
+    }
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin: 30px 0;
+    }
+    .gallery img {
+      width: 220px;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      transition: transform 0.4s;
+    }
+    .gallery img:hover {
+      transform: scale(1.12) rotate(3deg);
+    }
+    .heart-emoji {
+      font-size: 3rem;
+      animation: beat 1.2s infinite;
+      display: inline-block;
+    }
+    @keyframes beat {
+      0%,100% { transform: scale(1); }
+      50%     { transform: scale(1.3); }
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(-20px); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<div class="container">
+  <h1>Hey cutie... 💕</h1>
+  <h1>Will you be my Valentine?</h1>
+
+  <div class="buttons">
+    <button id="yesBtn">YES!! 💖</button>
+    <button id="noBtn">No</button>
+  </div>
+
+  <div class="hidden-love" id="lovePage">
+    <h1 style="font-size:4rem; margin:20px 0;">
+      <span class="heart-emoji">❤️</span> YAAAAAY!!! <span class="heart-emoji">❤️</span>
+    </h1>
+    <p style="font-size:1.8rem; color:#e84393;">
+      You just made me the happiest person today ♡〜٩(ˊᗜˋ*)و〜♡
+    </p>
+
+    <div class="gallery">
+      <!-- Cute cat pics – feel free to swap URLs -->
+      <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=500" alt="cute cat">
+      <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=500" alt="cat with flowers">
+      <img src="https://images.unsplash.com/photo-1533738369936-6e6e3c0ee35e?w=500" alt="sleepy kitty">
+      <img src="https://images.unsplash.com/photo-1586042091284-bd35e8567040?w=500" alt="cat holding heart">
+      <img src="https://images.unsplash.com/photo-1570545887596-2a11a6010b3c?w=500" alt="tiny kitten">
+      <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=500" alt="cat & chocolates vibe">
+    </div>
+
+    <p style="font-size:2rem; margin-top:30px; color:#ff4757;">
+      Lots of cuddles, chocolates, flowers and headpats are waiting for you~ 🐾🍫🌸
+    </p>
+  </div>
+</div>
+
+<script>
+// --- Confetti setup ---
+const canvas = document.getElementById('confetti-canvas');
+const ctx = canvas.getContext('2d');
+let confettiParticles = [];
+let animationFrameId;
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+class Confetti {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height - canvas.height;
+    this.size = Math.random() * 8 + 4;
+    this.speedY = Math.random() * 5 + 3;
+    this.speedX = Math.random() * 4 - 2;
+    this.rotation = Math.random() * 360;
+    this.rotationSpeed = Math.random() * 10 - 5;
+    this.color = `hsl(${Math.random()*360}, 100%, 60%)`;
+    this.opacity = 1;
+  }
+
+  update() {
+    this.y += this.speedY;
+    this.x += this.speedX;
+    this.rotation += this.rotationSpeed;
+    this.opacity -= 0.005; // fade out slowly
+    if (this.opacity < 0) this.opacity = 0;
+  }
+
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = this.opacity;
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotation * Math.PI / 180);
+    ctx.fillStyle = this.color;
+    ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+    ctx.restore();
+  }
+}
+
+function createConfettiBurst(count = 150) {
+  for (let i = 0; i < count; i++) {
+    confettiParticles.push(new Confetti());
+  }
+}
+
+function animateConfetti() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  confettiParticles.forEach((p, index) => {
+    p.update();
+    p.draw();
+    if (p.opacity <= 0 || p.y > canvas.height + 50) {
+      confettiParticles.splice(index, 1);
+    }
+  });
+
+  if (confettiParticles.length > 0) {
+    animationFrameId = requestAnimationFrame(animateConfetti);
+  }
+}
+
+function startConfetti() {
+  createConfettiBurst(180); // big burst!
+  animateConfetti();
+
+  // Optional: second smaller burst after 0.6s for extra sparkle
+  setTimeout(() => {
+    createConfettiBurst(100);
+  }, 600);
+
+  // Stop after ~6 seconds (particles fade anyway)
+  setTimeout(() => {
+    cancelAnimationFrame(animationFrameId);
+  }, 6500);
+}
+
+// --- Original script ---
+const yesBtn = document.getElementById('yesBtn');
+const noBtn = document.getElementById('noBtn');
+const lovePage = document.getElementById('lovePage');
+
+yesBtn.addEventListener('click', () => {
+  document.querySelector('.buttons').style.display = 'none';
+  lovePage.classList.add('show');
+  startConfetti();   // 🎉 trigger confetti!
+});
+
+// No button dodge
+noBtn.addEventListener('mouseover', () => {
+  const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 100);
+  const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 100);
+  noBtn.style.position = 'absolute';
+  noBtn.style.left = x + 'px';
+  noBtn.style.top  = y + 'px';
+});
+
+noBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  noBtn.style.transform = 'scale(0.6)';
+  setTimeout(() => { noBtn.style.transform = 'scale(1)'; }, 200);
+});
+</script>
+
+</body>
+</html>
